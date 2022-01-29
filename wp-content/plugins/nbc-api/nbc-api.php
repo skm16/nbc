@@ -82,7 +82,7 @@ function nbc_api_return_posts() {
     $items = array();
     // pass desired post data into an array
     foreach($posts as $item):
-    	$items[] = array('title'=> $item->post_title, 'pub_date'=>$item->post_date);
+    	$items[] = array('article' => array('title'=> $item->post_title, 'pub_date'=>$item->post_date));
     endforeach;
     // return array in the rest response
     $response = new WP_REST_Response($items);
