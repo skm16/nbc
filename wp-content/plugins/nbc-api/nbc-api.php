@@ -77,13 +77,18 @@ function nbc_api_create_posts_from_xml_feed_data() {
 function nbc_api_return_posts() {
 	$args = array(
 		'post_type' => 'post',
-		'posts_per_page' => 10,
+		'posts_per_page' => -1,
 	);
 	$posts = get_posts($args);
 	if (empty($posts)):
     	return new WP_Error( 'no_posts_found', 'No posts found.', array('status' => 404) );
     endif;
-    $response = new WP_REST_Response($posts);
+    $items = array();
+    foreach($posts as $item):
+    	$items[] = array('title'=> $item->post_title, 'pub_date'=>$item->post_date);
+    endforeach;
+    //$posts = array('title'=> $post->post_title, 'pub_date'=>$post->post_date);
+    $response = new WP_REST_Response($items);
     $response->set_status(200);
     return $response;
 }
