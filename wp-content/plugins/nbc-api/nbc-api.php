@@ -113,3 +113,5 @@ function nbc_api_cron_schedules($schedules){
 }
 add_filter('cron_schedules','nbc_api_cron_schedules');
 
+// add the cron event
+wp_schedule_event(time(), '10min', 'nbc_api_create_posts_from_xml_feed_data', $args);
