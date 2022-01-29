@@ -73,7 +73,7 @@ function nbc_api_create_posts_from_xml_feed_data() {
 // run the function each time page with shortcode is loaded for now
 //add_shortcode( 'feed', 'nbc_api_create_posts_from_xml_feed_data' );
 
-
+// callback function for api endpoint
 function nbc_api_return_posts() {
 	$args = array(
 		'post_type' => 'post',
@@ -93,6 +93,7 @@ function nbc_api_return_posts() {
     return $response;
 }
 
+// register api endpoint
 function nbc_api_add_api_route() {
 	register_rest_route( 'testfeed/v1', 'ingestedstories', array(
                 'methods'  => 'GET',
@@ -100,4 +101,15 @@ function nbc_api_add_api_route() {
       ));
 }
 add_action('rest_api_init', 'nbc_api_add_api_route');
+
+// define custom cron time
+function nbc_api_cron_schedules($schedules){
+    if(!isset($schedules['10min'])){
+        $schedules['10min'] = array(
+            'interval' => 10*60,
+            'display' => __('Once every 10 minutes'));
+    }
+    return $schedules;
+}
+add_filter('cron_schedules','nbc_api_cron_schedules');
 
