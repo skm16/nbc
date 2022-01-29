@@ -31,7 +31,7 @@ function nbc_api_create_posts_from_xml_feed_data() {
 		$feed_array_items = $feed_array['channel']['item'];
 
 		// lets grab the first 15 items from the array
-		$feed_array_items_slice = array_slice($feed_array_items, 1, 15, true);
+		$feed_array_items_slice = array_slice($feed_array_items, 0, 15, true);
 
 		// move through our array of latest 15 feed items
 		foreach($feed_array_items_slice as $item):
@@ -53,8 +53,8 @@ function nbc_api_create_posts_from_xml_feed_data() {
 								'post_title' =>	$item['title'],
 								'post_date' => $date_formatted,
 								'post_content' => $item['description'],
-								'post_status' =>	'publish',
-								'post_type' =>	'post'
+								'post_status' => 'publish',
+								'post_type' => 'post'
 							)
 						);
 
@@ -74,14 +74,17 @@ function nbc_api_return_posts() {
 		'posts_per_page' => -1,
 	);
 	$posts = get_posts($args);
+	// if no posts are returned show error message
 	if (empty($posts)):
     	return new WP_Error( 'no_posts_found', 'No posts found.', array('status' => 404) );
     endif;
+    // if posts are found
     $items = array();
+    // pass desired post data into an array
     foreach($posts as $item):
     	$items[] = array('title'=> $item->post_title, 'pub_date'=>$item->post_date);
     endforeach;
-    //$posts = array('title'=> $post->post_title, 'pub_date'=>$post->post_date);
+    // return array in the rest response
     $response = new WP_REST_Response($items);
     $response->set_status(200);
     return $response;
