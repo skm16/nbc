@@ -17,7 +17,7 @@ function nbc_api_get_feed_data() {
 	if($feed_url):
 
 		// load feed xml
-		$feed_data = simplexml_load_file( $feed_url );
+		$feed_data = simplexml_load_file( $feed_url, 'SimpleXMLElement', LIBXML_NOCDATA );
 
 		// convert to json
 		$feed_data_json = json_encode($feed_data);
@@ -50,13 +50,12 @@ function nbc_api_get_feed_data() {
 
 						$date_formatted = date_format( $date, 'Y-m-d H:i:s' );
 
-
 						// create the post
 						$post_id = wp_insert_post(
 							array(
 								'post_title' =>	$item['title'],
 								'post_date' => $date_formatted,
-								//'post_content' => $item['description'],
+								'post_content' => $item['description'],
 								'post_status' =>	'publish',
 								'post_type' =>	'post'
 							)
