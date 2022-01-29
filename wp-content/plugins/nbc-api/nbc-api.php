@@ -1,6 +1,8 @@
 <?php /*
 	Plugin Name: NBC API
 	Author: Sean Roberts
+	Description: Pulls xml feed from nbc endpoint, adds items as posts and creates a new rest api endpoint for posts.
+	Version: 0.1
 */
 
 function nbc_api_create_posts_from_xml_feed_data() {
@@ -30,11 +32,6 @@ function nbc_api_create_posts_from_xml_feed_data() {
 
 		// lets grab the first 15 items from the array
 		$feed_array_items_slice = array_slice($feed_array_items, 1, 15, true);
-
-		// var dump area for troubleshooting
-		echo '<pre>';
-		var_dump($feed_array_items_slice);
-		echo '</pre>';
 
 		// move through our array of latest 15 feed items
 		foreach($feed_array_items_slice as $item):
@@ -70,9 +67,6 @@ function nbc_api_create_posts_from_xml_feed_data() {
 	return false;
 }
 
-// run the function each time page with shortcode is loaded for now
-//add_shortcode( 'feed', 'nbc_api_create_posts_from_xml_feed_data' );
-
 // callback function for api endpoint
 function nbc_api_return_posts() {
 	$args = array(
@@ -102,16 +96,20 @@ function nbc_api_add_api_route() {
 }
 add_action('rest_api_init', 'nbc_api_add_api_route');
 
-// define custom cron time
-function nbc_api_cron_schedules($schedules){
-    if(!isset($schedules['10min'])){
-        $schedules['10min'] = array(
-            'interval' => 10*60,
-            'display' => __('Once every 10 minutes'));
-    }
+// add every 10 mins 
+function nbc_api_add_every_ten_minutes( $schedules ) {
+    $schedules['every_ten_minutes'] = array(
+            'interval'  => 60 * 10,
+            'display'   => __( 'Every 10 Minutes', 'nbc-feed-cron-schedule' )
+    );
     return $schedules;
 }
-add_filter('cron_schedules','nbc_api_cron_schedules');
+add_filter( 'cron_schedules', 'nbc_api_add_every_ten_minutes' );
 
-// add the cron event
-wp_schedule_event(time(), '10min', 'nbc_api_create_posts_from_xml_feed_data', $args);
+// schedule feed action if it's not already scheduled
+if ( ! wp_next_scheduled( 'nbc_api_add_every_ten_minutes' ) ) {
+    wp_schedule_event( time(), 'every_ten_minutes', 'nbc_api_add_every_ten_minutes' );
+}
+
+// hook into that action that'll fire every ten minutes
+add_action( 'nbc_api_add_every_ten_minutes', 'nbc_api_create_posts_from_xml_feed_data' );
