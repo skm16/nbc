@@ -45,11 +45,17 @@ function nbc_api_get_feed_data() {
 					// if the post is not found
 					if(!$found_post):
 
+						// format publish date
+						$date = date_create_from_format("D, M d Y g:i:s A", $item['pubDate']);
+
+						$date_formatted = date_format( $date, 'Y-m-d H:i:s' );
+
+
 						// create the post
 						$post_id = wp_insert_post(
 							array(
 								'post_title' =>	$item['title'],
-								//'post_date' => $item['pubDate'],
+								'post_date' => $date_formatted,
 								//'post_content' => $item['description'],
 								'post_status' =>	'publish',
 								'post_type' =>	'post'
