@@ -3,7 +3,7 @@
 	Author: Sean Roberts
 */
 
-function nbc_api_get_feed_data() {
+function nbc_api_create_posts_from_xml_feed_data() {
 
 	// adds posts exists admin function to plugin
 	if ( ! function_exists( 'post_exists' ) ) {
@@ -71,5 +71,4 @@ function nbc_api_get_feed_data() {
 }
 
 // run the function each time page with shortcode is loaded for now
-add_shortcode( 'feed', 'nbc_api_get_feed_data' );
-//add_filter( 'after_setup_theme', 'nbc_api_get_feed_data' );
+add_shortcode( 'feed', 'nbc_api_create_posts_from_xml_feed_data' );
