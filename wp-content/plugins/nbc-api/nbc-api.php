@@ -113,3 +113,12 @@ if ( ! wp_next_scheduled( 'nbc_api_add_every_ten_minutes' ) ) {
 
 // hook into that action that'll fire every ten minutes
 add_action( 'nbc_api_add_every_ten_minutes', 'nbc_api_create_posts_from_xml_feed_data' );
+
+// deactive feed import on plugin deativation
+function nbc_api_deactivate() {
+    wp_clear_scheduled_hook( 'nbc_api_add_every_ten_minutes' );
+}
+ 
+add_action('init', function() {
+    register_deactivation_hook( __FILE__, 'nbc_api_deactivate' );
+});
